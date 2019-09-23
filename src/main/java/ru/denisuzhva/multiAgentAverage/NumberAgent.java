@@ -17,20 +17,13 @@ public class NumberAgent extends Agent {
 
     @Override
     protected void setup() {
+        Object[] args = getArguments();
+        linkedAgents = (Integer[])args.clone();
+
         int agentId = Integer.parseInt(getAID().getLocalName());
         Random rand = new Random();
         number = rand.nextFloat();
         System.out.println("Agent #" + agentId + " is ready; number guessed: " + number);
-
-        // Hardcode the links
-        linkedAgents = new Integer[4];
-        for (int i = 0; i < 5; i++) {
-            if (i < agentId) {
-                linkedAgents[i] = i;
-            } else if (i > agentId) {
-                linkedAgents[i-1] = i;
-            }
-        }
 
         addBehaviour(new WaitForNumberRequest());
         addBehaviour(new SendNumberRequest());
