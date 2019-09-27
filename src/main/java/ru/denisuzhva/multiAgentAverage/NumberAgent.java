@@ -3,12 +3,8 @@ package main.java.ru.denisuzhva.multiAgentAverage;
 import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
-//import jade.core.event.MessageAdapter;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-//import jade.tools.sniffer.Message;
-//import jade.tools.sniffer.Message;
-//import java.nio.channels.InterruptedByTimeoutException;
 
 import java.util.*;
 
@@ -25,7 +21,6 @@ public class NumberAgent extends Agent {
     protected void setup() {
         Object[] args = getArguments();
         linkedAgents = (Integer[])args.clone();
-        //Collection<Integer> linkedAgentsCollection = Arrays.asList(linkedAgents);
 
         rootAgentSet = new HashSet<>();
 
@@ -35,16 +30,14 @@ public class NumberAgent extends Agent {
         System.out.println("Agent #" + agentId + " is ready; number guessed: " + guessedNumber);
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         if (agentId == 0) {
             addBehaviour(new RequestNumAver());
         }
-        if (agentId != 0) {
-            addBehaviour(new NumberRequestListener(this, 100));
-        }
+        addBehaviour(new NumberRequestListener());
     }
 
 
@@ -68,6 +61,7 @@ public class NumberAgent extends Agent {
         @Override
         public void action() {
             switch (step) {
+
                 case 0:
                     selfIdString = getAID().getLocalName();
                     rootAgentSet.add(Integer.parseInt(selfIdString));
@@ -75,16 +69,25 @@ public class NumberAgent extends Agent {
                     sumRequestMsg.setContent(selfIdString);
                     sumRequestMsg.setConversationId(sumRequestConvId);
                     sumRequestMsg.setReplyWith("root-request" + System.currentTimeMillis());
+
                     for (Integer linkedAgent : linkedAgents) {
+
+                        /*
                         System.out.println("Root Agent #" +
                                 selfIdString +
                                 " sent a request message to its linked Agent #" + linkedAgent);
+                        */
+
                         sumRequestMsg.addReceiver(new AID(Integer.toString(linkedAgent), AID.ISLOCALNAME));
                     }
                     myAgent.send(sumRequestMsg);
+
+                    /*
                     for (jade.util.leap.Iterator it = sumRequestMsg.getAllReceiver(); it.hasNext(); ) {
                         System.out.println(it.next());
                     }
+                    */
+
                     mt = MessageTemplate.and(MessageTemplate.MatchInReplyTo(sumRequestMsg.getReplyWith()),
                             MessageTemplate.and(MessageTemplate.MatchConversationId(sumRequestConvId),
                             MessageTemplate.not(MessageTemplate.MatchPerformative(ACLMessage.REQUEST))));
@@ -110,9 +113,13 @@ public class NumberAgent extends Agent {
                         }
                         int totalReplyCount = refuseCount + (propagateCount + informCount) / 2;
                         if (totalReplyCount >= linkedAgents.length) {
+
+                            /*
                             System.out.println("Refuses: " + refuseCount);
                             System.out.println("Propagates: " + propagateCount);
                             System.out.println("Informs: " + informCount);
+                            */
+
                             step = 2;
                         }
                     }
@@ -123,7 +130,7 @@ public class NumberAgent extends Agent {
 
                 case 2:
                     float averageValue = globalSum / globalAgentCount;
-                    System.out.println("Global agent count: " + globalAgentCount);
+                    //System.out.println("Global agent count: " + globalAgentCount);
                     System.out.println("Root Agent #" + selfIdString + " displaying average value: " + averageValue);
                     step = 3;
                     break;
@@ -137,10 +144,7 @@ public class NumberAgent extends Agent {
     }
 
 
-    private class NumberRequestListener extends TickerBehaviour {
-        NumberRequestListener(Agent agent, Integer tickLen) {
-            super(agent, tickLen);
-        }
+    private class NumberRequestListener extends CyclicBehaviour {
 
         private float localSum = guessedNumber;
         private int localAgentCount = 1;
@@ -155,7 +159,7 @@ public class NumberAgent extends Agent {
         private int step = 0;
 
         @Override
-        protected void onTick() {
+        public void action() {
             String selfIdString = getAID().getLocalName();
             switch (step) {
                 case 0:
@@ -165,7 +169,7 @@ public class NumberAgent extends Agent {
                     incomingMessage = myAgent.receive(mt);
                     if (incomingMessage != null) {
                         prevRequester = incomingMessage.getSender();
-                        System.out.println("A #" + selfIdString + " GOT a request FROM A #" + prevRequester.getLocalName());
+                        //System.out.println("A #" + selfIdString + " GOT a request FROM A #" + prevRequester.getLocalName());
                         rootAgent = incomingMessage.getContent();
                         rootAgentNumber = Integer.parseInt(rootAgent);
                         if (rootAgentSet.contains(rootAgentNumber)) {
@@ -195,7 +199,7 @@ public class NumberAgent extends Agent {
                     boolean sendPerformed = false;
                     for (Integer linkedAgent : linkedAgents) {
                         if (!linkedAgent.equals(Integer.parseInt(prevRequester.getLocalName()))) {
-                            System.out.println("A #" + selfIdString + " SENT a request TO A #" + linkedAgent);
+                            //System.out.println("A #" + selfIdString + " SENT a request TO A #" + linkedAgent);
                             localRequestMsg.addReceiver(new AID(Integer.toString(linkedAgent), AID.ISLOCALNAME));
                             sendPerformed = true;
                         }
@@ -216,12 +220,16 @@ public class NumberAgent extends Agent {
                 case 2:
                     ACLMessage replyMsg = myAgent.receive(mt);
                     if (replyMsg != null) {
+
+                        /*
                         System.out.println("Agent #" +
                                 selfIdString +
                                 " received performative " +
                                 replyMsg.getPerformative() +
                                 " from A #" +
                                 replyMsg.getSender().getLocalName());
+                        */
+
                         if (replyMsg.getPerformative() == ACLMessage.PROPAGATE) {
                             float prevSum = Float.parseFloat(replyMsg.getContent());
                             localSum += prevSum;
@@ -241,10 +249,14 @@ public class NumberAgent extends Agent {
                             refuseReply.setPerformative(ACLMessage.REFUSE);
                             refuseReply.setConversationId(sumRequestConvId);
                             myAgent.send(refuseReply);
+
+                            /*
                             System.out.println("A #" + selfIdString +
                                     " refused to A #" +
                                     replyMsg.getSender().getLocalName() +
                                     " from STEP 2");
+                            */
+
                         }
                         int totalReplyCount = refuseCount + (propagateCount + informCount) / 2;
                         //System.out.println("A #" + selfIdString + " totalReplies: " + totalReplyCount);
@@ -273,7 +285,8 @@ public class NumberAgent extends Agent {
                     localSumMsg.setContent(String.valueOf(localSum));
                     localAgentCountMsg.setContent(String.valueOf(localAgentCount));
 
-                    System.out.println("A #" + selfIdString + " sent PROPAGATE and INFORM to A #" + prevRequester.getLocalName());
+                    //System.out.println("A #" + selfIdString + " sent PROPAGATE and INFORM to A #" + prevRequester.getLocalName());
+
                     myAgent.send(localSumMsg);
                     myAgent.send(localAgentCountMsg);
                     step = 0;
