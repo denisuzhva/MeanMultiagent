@@ -17,7 +17,7 @@ class MainController {
 
     MainController() {
         agentConnectivity = new HashMap<Integer, Integer[]>();
-        triangleGraphSix();
+        triangleGraphThree();
     }
 
     void initAgents() {
@@ -41,6 +41,13 @@ class MainController {
     }
 
     // Graph makers
+
+    private void simpleDuo() {
+        numberOfAgents = 2;
+        agentConnectivity.put(0, new Integer[] {1});
+        agentConnectivity.put(1, new Integer[] {0});
+    }
+
     private void triangleGraphSix() {
         // 6 nodes only!
         numberOfAgents = 6;
