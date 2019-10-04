@@ -34,6 +34,7 @@ public class NumberAgent extends Agent {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         if (agentId == 0) {
             addBehaviour(new RequestNumAver());
         }
@@ -71,31 +72,26 @@ public class NumberAgent extends Agent {
                     sumRequestMsg.setReplyWith("root-request" + System.currentTimeMillis());
 
                     for (Integer linkedAgent : linkedAgents) {
-
                         /*
                         System.out.println("Root Agent #" +
                                 selfIdString +
                                 " sent a request message to its linked Agent #" + linkedAgent);
                         */
-
                         sumRequestMsg.addReceiver(new AID(Integer.toString(linkedAgent), AID.ISLOCALNAME));
                     }
                     myAgent.send(sumRequestMsg);
-
                     /*
                     for (jade.util.leap.Iterator it = sumRequestMsg.getAllReceiver(); it.hasNext(); ) {
                         System.out.println(it.next());
                     }
                     */
-
                     mt = MessageTemplate.and(MessageTemplate.MatchInReplyTo(sumRequestMsg.getReplyWith()),
-                            MessageTemplate.and(MessageTemplate.MatchConversationId(sumRequestConvId),
-                            MessageTemplate.not(MessageTemplate.MatchPerformative(ACLMessage.REQUEST))));
+                                             MessageTemplate.and(MessageTemplate.MatchConversationId(sumRequestConvId),
+                                                                 MessageTemplate.not(MessageTemplate.MatchPerformative(ACLMessage.REQUEST))));
                     step = 1;
                     break;
 
                 case 1:
-                    //System.out.println("Root is on STEP 1");
                     ACLMessage replyMsg = myAgent.receive(mt);
                     if (replyMsg != null) {
                         if (replyMsg.getPerformative() == ACLMessage.PROPAGATE) {
@@ -113,14 +109,15 @@ public class NumberAgent extends Agent {
                         }
                         int totalReplyCount = refuseCount + (propagateCount + informCount) / 2;
                         if (totalReplyCount >= linkedAgents.length) {
-
                             /*
                             System.out.println("Refuses: " + refuseCount);
                             System.out.println("Propagates: " + propagateCount);
                             System.out.println("Informs: " + informCount);
                             */
-
                             step = 2;
+                            propagateCount = 0;
+                            informCount = 0;
+                            refuseCount = 0;
                         }
                     }
                     else {
@@ -130,7 +127,7 @@ public class NumberAgent extends Agent {
 
                 case 2:
                     float averageValue = globalSum / globalAgentCount;
-                    //System.out.println("Global agent count: " + globalAgentCount);
+                    System.out.println("Global agent count: " + globalAgentCount);
                     System.out.println("Root Agent #" + selfIdString + " displaying average value: " + averageValue);
                     step = 3;
                     break;
@@ -151,36 +148,32 @@ public class NumberAgent extends Agent {
         private int propagateCount = 0;
         private int informCount = 0;
         private int refuseCount = 0;
-        private AID prevRequester;
+        private Integer prevRequester;
         private ACLMessage incomingMessage;
         private String rootAgent;
-        private Integer rootAgentNumber;
         private MessageTemplate mt;
         private int step = 0;
 
         @Override
         public void action() {
-            String selfIdString = getAID().getLocalName();
+            //String selfIdString = getAID().getLocalName();
             switch (step) {
                 case 0:
-                    //System.out.println("Agent #" + selfIdString + " is on STEP 0");
                     mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
                             MessageTemplate.MatchConversationId(sumRequestConvId));
                     incomingMessage = myAgent.receive(mt);
                     if (incomingMessage != null) {
-                        prevRequester = incomingMessage.getSender();
+                        prevRequester = Integer.parseInt(incomingMessage.getSender().getLocalName());
                         //System.out.println("A #" + selfIdString + " GOT a request FROM A #" + prevRequester.getLocalName());
                         rootAgent = incomingMessage.getContent();
-                        rootAgentNumber = Integer.parseInt(rootAgent);
+                        Integer rootAgentNumber = Integer.parseInt(rootAgent);
                         if (rootAgentSet.contains(rootAgentNumber)) {
-                            //System.out.println("REFUSE: " + incomingMessage.getPerformative());
                             ACLMessage reply = incomingMessage.createReply();
                             reply.setPerformative(ACLMessage.REFUSE);
                             reply.setConversationId(sumRequestConvId);
                             myAgent.send(reply);
                         }
                         else {
-                            //System.out.println("CONFIRM");
                             rootAgentSet.add(rootAgentNumber);
                             step = 1;
                         }
@@ -198,8 +191,7 @@ public class NumberAgent extends Agent {
 
                     boolean sendPerformed = false;
                     for (Integer linkedAgent : linkedAgents) {
-                        if (!linkedAgent.equals(Integer.parseInt(prevRequester.getLocalName()))) {
-                            //System.out.println("A #" + selfIdString + " SENT a request TO A #" + linkedAgent);
+                        if (!linkedAgent.equals(prevRequester)) {
                             localRequestMsg.addReceiver(new AID(Integer.toString(linkedAgent), AID.ISLOCALNAME));
                             sendPerformed = true;
                         }
@@ -220,7 +212,6 @@ public class NumberAgent extends Agent {
                 case 2:
                     ACLMessage replyMsg = myAgent.receive(mt);
                     if (replyMsg != null) {
-
                         /*
                         System.out.println("Agent #" +
                                 selfIdString +
@@ -229,7 +220,6 @@ public class NumberAgent extends Agent {
                                 " from A #" +
                                 replyMsg.getSender().getLocalName());
                         */
-
                         if (replyMsg.getPerformative() == ACLMessage.PROPAGATE) {
                             float prevSum = Float.parseFloat(replyMsg.getContent());
                             localSum += prevSum;
@@ -243,20 +233,17 @@ public class NumberAgent extends Agent {
                         else if (replyMsg.getPerformative() == ACLMessage.REFUSE) {
                             refuseCount++;
                         }
-                        else if (replyMsg.getPerformative() == ACLMessage.REQUEST &&
-                                !replyMsg.getSender().getLocalName().equals(rootAgent)) {
+                        else if (replyMsg.getPerformative() == ACLMessage.REQUEST) {
                             ACLMessage refuseReply = replyMsg.createReply();
                             refuseReply.setPerformative(ACLMessage.REFUSE);
                             refuseReply.setConversationId(sumRequestConvId);
                             myAgent.send(refuseReply);
-
                             /*
                             System.out.println("A #" + selfIdString +
                                     " refused to A #" +
                                     replyMsg.getSender().getLocalName() +
                                     " from STEP 2");
                             */
-
                         }
                         int totalReplyCount = refuseCount + (propagateCount + informCount) / 2;
                         //System.out.println("A #" + selfIdString + " totalReplies: " + totalReplyCount);

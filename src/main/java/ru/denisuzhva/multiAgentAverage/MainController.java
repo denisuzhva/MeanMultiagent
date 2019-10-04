@@ -1,7 +1,7 @@
 package main.java.ru.denisuzhva.multiAgentAverage;
 
-import com.sun.tools.javac.Main;
-import jade.wrapper.AgentContainer;
+//import com.sun.tools.javac.Main;
+//import jade.wrapper.AgentContainer;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -16,8 +16,8 @@ class MainController {
     private static HashMap<Integer, Integer[]> agentConnectivity;
 
     MainController() {
-        agentConnectivity = new HashMap<Integer, Integer[]>();
-        triangleGraphSix();
+        agentConnectivity = new HashMap<>();
+        triangleGraphTen();
     }
 
     void initAgents() {
@@ -40,9 +40,27 @@ class MainController {
         }
     }
 
+
     // Graph makers
+    private void triangleGraphTen() {
+        numberOfAgents = 10;
+        agentConnectivity.put(0, new Integer[] {1, 2});
+
+        agentConnectivity.put(1, new Integer[] {0, 2, 3, 4});
+        agentConnectivity.put(2, new Integer[] {0, 1, 4, 5});
+
+        agentConnectivity.put(3, new Integer[] {1, 4, 6, 7});
+        agentConnectivity.put(4, new Integer[] {1, 2, 3, 5, 7, 8});
+        agentConnectivity.put(5, new Integer[] {2, 4, 8, 9});
+
+        agentConnectivity.put(6, new Integer[] {3, 7});
+        agentConnectivity.put(7, new Integer[] {6, 3, 4, 8});
+        agentConnectivity.put(8, new Integer[] {7, 4, 5, 9});
+        agentConnectivity.put(9, new Integer[] {8, 5});
+    }
+
+
     private void triangleGraphSix() {
-        // 6 nodes only!
         numberOfAgents = 6;
         agentConnectivity.put(0, new Integer[] {1, 2});
         agentConnectivity.put(1, new Integer[] {0, 2, 3, 4});
