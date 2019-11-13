@@ -5,7 +5,7 @@ import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.tools.sniffer.Message;
+//import jade.tools.sniffer.Message;
 
 import java.util.*;
 
@@ -64,6 +64,9 @@ public class NumberAgent extends Agent {
         public void action() {
             switch (step) {
 
+                /*
+                Send request
+                 */
                 case 0:
                     selfIdString = getAID().getLocalName();
                     rootAgentSet.add(Integer.parseInt(selfIdString));
@@ -92,6 +95,9 @@ public class NumberAgent extends Agent {
                     step = 1;
                     break;
 
+                /*
+                Receive all replies
+                 */
                 case 1:
                     ACLMessage replyMsg = myAgent.receive(mt);
                     if (replyMsg != null) {
@@ -126,6 +132,9 @@ public class NumberAgent extends Agent {
                     }
                     break;
 
+                /*
+                Calculate average
+                 */
                 case 2:
                     float averageValue = globalSum / globalAgentCount;
                     System.out.println("Global agent count: " + globalAgentCount);
@@ -133,6 +142,9 @@ public class NumberAgent extends Agent {
                     step = 3;
                     break;
 
+                /*
+                Send termination message
+                 */
                 case 3:
                     ACLMessage terminatorMsg = new ACLMessage(ACLMessage.CONFIRM);
                     terminatorMsg.setConversationId(sumRequestConvId);
@@ -181,7 +193,6 @@ public class NumberAgent extends Agent {
                         else if (incomingMessage.getPerformative() == ACLMessage.CONFIRM) {
                             step = 5;
                         }
-
                     }
                     else {
                         block();

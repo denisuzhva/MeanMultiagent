@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+sourceSets {
+   main {
+      java {
+         srcDir 'src'
+      }
+   }
+	
+   test {
+      java {
+         srcDir 'test'
+      }
+   }
+}
+
+
+dependencies {
+	compile files('./libs/jade.jar')
+}
