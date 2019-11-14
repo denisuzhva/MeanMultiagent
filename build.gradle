@@ -1,4 +1,6 @@
-apply plugin: 'java'
+plugins {
+	id 'application'
+}
 
 sourceSets {
    main {
@@ -6,15 +8,20 @@ sourceSets {
          srcDir 'src'
       }
    }
-	
-   test {
-      java {
-         srcDir 'test'
-      }
-   }
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'main.java.ru.denisuzhva.multiAgentAverage.App'
+    }
+}
 
 dependencies {
 	compile files('./libs/jade.jar')
 }
+
+application {
+    mainClassName = 'main.java.ru.denisuzhva.multiAgentAverage.App'
+}
+
+
