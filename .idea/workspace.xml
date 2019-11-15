@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e0682b94-9896-4268-8fda-9684eacecb11" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent$NumberRequestListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent$NumberRequestListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent$RequestNumAver.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent$RequestNumAver.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/untitled104/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/report.fdb_latexmk" beforeDir="false" afterPath="$PROJECT_DIR$/report/report.fdb_latexmk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/report.log" beforeDir="false" afterPath="$PROJECT_DIR$/report/report.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/report/report.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/report.synctex(busy)" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/report.tex" beforeDir="false" afterPath="$PROJECT_DIR$/report/report.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/denisuzhva/multiAgentAverage/NumberAgent.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="171" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="D:\dev\_mm\MA\MeanMultiagent\.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="1REHjIPus2rVD7v0evNq7irqfG2" />
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/jade/lib/jade.jar!/" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Application" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="main.java.ru.denisuzhva.multiAgentAverage.App" />
+      <module name="untitled104" />
+      <option name="PROGRAM_PARAMETERS" value="-gui" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Application" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e0682b94-9896-4268-8fda-9684eacecb11" name="Default Changelist" comment="" />
+      <created>1569225468352</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1569225468352</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/MeanMultiagent$Application.ic" NAME="Application Coverage Results" MODIFIED="1569595598882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>

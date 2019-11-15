@@ -1,0 +1,10 @@
+I. Propagate to all neighbors
+	* PROPAGATE NA->EA
+	* PROPAGATE EA->{NA: NA belongs to N_i}
+	* Calculate alpha * sum diff = prop
+
+II. Proose to all neighbors
+	* PROPOSE p NA->EA
+	* For each NA EA checks if its N_i needs PROPOSE from the NA
+	* EA sends prop to {NA: NA belongs to N_i} until no one needs it anymore or prop reaches 0
+	* If prop != 0 then REJECT_PROPOSAL EA->NA
