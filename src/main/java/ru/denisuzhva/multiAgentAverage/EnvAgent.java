@@ -12,6 +12,7 @@ import java.util.*;
 
 
 public class EnvAgent extends Agent {
+
 	private String selfId;
     private String consensusStateConvId;
 	
@@ -24,6 +25,7 @@ public class EnvAgent extends Agent {
 
 		addBehaviour(new StateTranslator());
 		addBehaviour(new PoolTranslator());
+		addBehaviour(new StateRefillTranslator());
 	}
 
 
@@ -94,6 +96,41 @@ public class EnvAgent extends Agent {
 					poolFurther.addReceiver(new AID(contentEnt, AID.ISLOCALNAME));
 				}
 				myAgent.send(poolFurther);
+			}
+		}
+	}
+
+
+	private class StateRefillTranslator extends CyclicBehaviour {
+
+		private float inRefill;
+		private float outRefill;
+		private String msgContent;
+		private String[] contentList;
+		private String recipient;
+
+
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL),
+						MessageTemplate.MatchPerformative(ACLMessage.REJECT_PROPOSAL)),
+					MessageTemplate.MatchConversationId(consensusStateConvId));
+			ACLMessage refillMsg = myAgent.receive(mt);
+			if (refillMsg != null) {
+				msgContent = refillMsg.getContent();
+				contentList = msgContent.split(" ");
+				inRefill = Float.parseFloat(contentList[0]);
+				recipient = contentList[1];
+
+				// do noizy stuff here
+				outRefill = inRefill; 
+
+				ACLMessage refillFurther = new ACLMessage(ACLMessage.INFORM);
+				refillFurther.setContent(String.valueOf(outRefill));
+				refillFurther.setConversationId(consensusStateConvId);
+				refillFurther.setReplyWith(refillMsg.getReplyWith());
+				refillFurther.setSender(refillMsg.getSender());
+				refillFurther.addReceiver(new AID(recipient, AID.ISLOCALNAME));
+				myAgent.send(refillFurther);
 			}
 		}
 	}
