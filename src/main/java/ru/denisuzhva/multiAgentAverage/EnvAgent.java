@@ -107,36 +107,40 @@ public class EnvAgent extends Agent {
 				outPoolDist = inPool / numNeigh + nxtNormal;
 
 				float nxtUni = rand.nextFloat();
+				float nxtUniLose = rand.nextFloat();
 				for (int i = 1; i < contentList.length; i++) {
 					String recipientId = contentList[i];
 					if (nxtUni < 0.99f) {
-						ACLMessage poolFurtherMsg = new ACLMessage(ACLMessage.PROPOSE);
-						poolFurtherMsg.setContent(String.valueOf(outPoolDist));
-						poolFurtherMsg.setConversationId(consensusStateConvId);
-						poolFurtherMsg.setReplyWith(poolMsg.getReplyWith());
-						poolFurtherMsg.setSender(poolMsg.getSender());
-						poolFurtherMsg.addReceiver(new AID(recipientId, AID.ISLOCALNAME));
-						myAgent.send(poolFurtherMsg);
+						if (nxtUniLose < 0.99f) {
+							ACLMessage poolFurtherMsg = new ACLMessage(ACLMessage.PROPOSE);
+							poolFurtherMsg.setContent(String.valueOf(outPoolDist));
+							poolFurtherMsg.setConversationId(consensusStateConvId);
+							poolFurtherMsg.setReplyWith(poolMsg.getReplyWith());
+							poolFurtherMsg.setSender(poolMsg.getSender());
+							poolFurtherMsg.addReceiver(new AID(recipientId, AID.ISLOCALNAME));
+							myAgent.send(poolFurtherMsg);
 
-						if (poolHolder.get(senderId) != null) {
-							HashMap<String, ArrayList<Float>> poolHolderMap = poolHolder.get(senderId);
-							if (poolHolderMap.get(recipientId) != null) {
-								List<Float> poolHolderMapList = poolHolderMap.get(recipientId);
-								for (int iterr = 0; iterr < poolHolderMapList.size(); iterr++) {
-									Float valGet = poolHolderMapList.get(iterr);
-									poolHolder.get(senderId).get(recipientId).remove(valGet);
+							if (poolHolder.get(senderId) != null) {
+								HashMap<String, ArrayList<Float>> poolHolderMap = poolHolder.get(senderId);
+								if (poolHolderMap.get(recipientId) != null) {
+									List<Float> poolHolderMapList = poolHolderMap.get(recipientId);
+									for (int iterr = 0; iterr < poolHolderMapList.size(); iterr++) {
+										Float valGet = poolHolderMapList.get(iterr);
+										poolHolder.get(senderId).get(recipientId).remove(valGet);
 
-									poolFurtherMsg = new ACLMessage(ACLMessage.PROPOSE);
-									poolFurtherMsg.setContent(String.valueOf(valGet));
-									poolFurtherMsg.setConversationId(consensusStateConvId);
-									poolFurtherMsg.setReplyWith(poolMsg.getReplyWith());
-									poolFurtherMsg.setSender(poolMsg.getSender());
-									poolFurtherMsg.addReceiver(new AID(recipientId, AID.ISLOCALNAME));
-									myAgent.send(poolFurtherMsg);
-									//System.out.println("shit happens");
+										poolFurtherMsg = new ACLMessage(ACLMessage.PROPOSE);
+										poolFurtherMsg.setContent(String.valueOf(valGet));
+										poolFurtherMsg.setConversationId(consensusStateConvId);
+										poolFurtherMsg.setReplyWith(poolMsg.getReplyWith());
+										poolFurtherMsg.setSender(poolMsg.getSender());
+										poolFurtherMsg.addReceiver(new AID(recipientId, AID.ISLOCALNAME));
+										myAgent.send(poolFurtherMsg);
+										//System.out.println("shit happens");
+									}
 								}
 							}
 						}
+							
 					} else {
 						if (poolHolder.get(senderId) != null) {
 							if (poolHolder.get(senderId).get(recipientId) != null) {

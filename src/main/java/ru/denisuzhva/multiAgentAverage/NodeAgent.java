@@ -50,8 +50,8 @@ public class NodeAgent extends Agent {
 
         System.out.println("Agent " + selfId + " is ready; current state: " + selfState);
 		addBehaviour(new StateSender(this, 100));
-		addBehaviour(new PoolPusher());
 		addBehaviour(new StateListener());
+		addBehaviour(new PoolPusher());
 		addBehaviour(new PoolFiller());
 		addBehaviour(new StateRefiller());
 
