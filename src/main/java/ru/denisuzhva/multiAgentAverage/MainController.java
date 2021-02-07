@@ -12,6 +12,7 @@ import java.util.*;
 
 
 class MainController {
+
 	private static int numberOfAgents = 10;
     private static HashMap<Integer, Integer[]> agentConnectivity;
 
@@ -30,6 +31,24 @@ class MainController {
         p.setParameter(Profile.GUI, "false");
         ContainerController cc = rt.createMainContainer(p);
 
+		try {
+			AgentController GodAgent = cc.createNewAgent("god",
+				"main.java.ru.denisuzhva.multiAgentAverage.GodAgent",
+				new Integer[] {numberOfAgents});
+			GodAgent.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			AgentController EnvAgent = cc.createNewAgent("env",
+				"main.java.ru.denisuzhva.multiAgentAverage.EnvAgent",
+				null);
+			EnvAgent.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
         try {
             for (int i = 0; i < numberOfAgents; i++) {
                 AgentController NodeAgent = cc.createNewAgent(Integer.toString(i),
@@ -40,15 +59,6 @@ class MainController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-		try {
-			AgentController EnvAgent = cc.createNewAgent("env",
-				"main.java.ru.denisuzhva.multiAgentAverage.EnvAgent",
-				null);
-			EnvAgent.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
     }
 
 

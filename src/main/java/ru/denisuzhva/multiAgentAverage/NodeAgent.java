@@ -19,6 +19,7 @@ public class NodeAgent extends Agent {
 	private float conformity;
 	private String selfId;
 	private MessageTemplate mt;
+	private int iterrr;
 
 
     @Override
@@ -44,13 +45,17 @@ public class NodeAgent extends Agent {
 		*/
 
 		statePool = 0.0f;
-		conformity = 0.1f;
+		conformity = 0.3f;
+		iterrr = 0;
 
         System.out.println("Agent " + selfId + " is ready; current state: " + selfState);
-		addBehaviour(new StateSender(this, 5000));
-		addBehaviour(new PoolPusher(this, 100));
+		addBehaviour(new StateSender(this, 100));
 		addBehaviour(new StateListener());
+		addBehaviour(new PoolPusher());
 		addBehaviour(new PoolFiller());
+		addBehaviour(new StateRefiller());
+
+		addBehaviour(new Prayer());
     }
 
 
@@ -58,6 +63,18 @@ public class NodeAgent extends Agent {
     protected void takeDown() {
         System.out.println("Agent " + selfId + " is terminating");
     }
+
+
+	private class Prayer extends OneShotBehaviour {
+
+		public void action() {
+			ACLMessage prayerMsg = new ACLMessage(ACLMessage.PROPAGATE);
+			prayerMsg.setContent(String.valueOf(selfState));
+			prayerMsg.setConversationId(consensusStateConvId);
+			prayerMsg.addReceiver(new AID("god", AID.ISLOCALNAME));
+			myAgent.send(prayerMsg);
+		}
+	}
 
 
 	private class StateSender extends TickerBehaviour {
@@ -68,16 +85,21 @@ public class NodeAgent extends Agent {
 		
 		@Override
 		protected void onTick() {
-			System.out.println(selfId + " state " + selfState);
+			iterrr++;
+			if (iterrr % 100 == 0) {
+				System.out.println(selfId + " state " + selfState + " at " + iterrr + " iteration");
+			}
 
 			ACLMessage stateOutMsg = new ACLMessage(ACLMessage.PROPAGATE);
 			String stateContent = String.valueOf(selfState); 
+			
 			for (Integer linkedAgent : linkedAgents) {
 				stateContent += " " + String.valueOf(linkedAgent);
 			}
 			stateOutMsg.setContent(stateContent);
 			stateOutMsg.setConversationId(consensusStateConvId);
 			stateOutMsg.setReplyWith("consensusJobStatePpg" + System.currentTimeMillis());
+			stateOutMsg.setSender(new AID(selfId, AID.ISLOCALNAME));
 			stateOutMsg.addReceiver(new AID("env", AID.ISLOCALNAME));
 			myAgent.send(stateOutMsg);
 		}
@@ -97,37 +119,31 @@ public class NodeAgent extends Agent {
 				//String sender = inStateMsg.getSender().getLocalName();
 				//System.out.println(statePool + " " + sender + " " + selfId);
 				if (statePool > 0.0f) {
+					ACLMessage pushMsg = new ACLMessage(ACLMessage.PROPOSE);
+					String poolContent = String.valueOf(statePool); 
+					for (Integer linkedAgent : linkedAgents) {
+						poolContent += " " + String.valueOf(linkedAgent);
+					}
+					pushMsg.setContent(poolContent);
+					pushMsg.setConversationId(consensusStateConvId);
+					pushMsg.setReplyWith("consensusJobPoolPps" + System.currentTimeMillis());
+					pushMsg.setSender(new AID(selfId, AID.ISLOCALNAME));
+					pushMsg.addReceiver(new AID("env", AID.ISLOCALNAME));
+
 					selfState -= statePool;
-					//statePool = 0.0f;
+					statePool = 0.0f;
+					myAgent.send(pushMsg);
 				}
 			}
 		}
 	}
 
 
-	private class PoolPusher extends TickerBehaviour {
-
-		PoolPusher(Agent a, long period) {
-			super(a, period);
-		}
+	private class PoolPusher extends CyclicBehaviour {
 
 		@Override
-		protected void onTick() {
-			if (statePool > 0.0f) {
-				ACLMessage pushMsg = new ACLMessage(ACLMessage.PROPOSE);
-				String poolContent = String.valueOf(statePool); 
-				for (Integer linkedAgent : linkedAgents) {
-					poolContent += " " + String.valueOf(linkedAgent);
-				}
-				pushMsg.setContent(poolContent);
-				pushMsg.setConversationId(consensusStateConvId);
-				pushMsg.setReplyWith("consensusJobPoolPps" + System.currentTimeMillis());
-				pushMsg.addReceiver(new AID("env", AID.ISLOCALNAME));
-
-				//selfState -= statePool;
-				statePool = 0.0f;
-				myAgent.send(pushMsg);
-			}
+		public void action() {
+			
 		}
 	}
 
@@ -143,12 +159,39 @@ public class NodeAgent extends Agent {
 				Float inPool = Float.parseFloat(poolIn.getContent());	
 				Float newStatePool = statePool + inPool;
 
+				ACLMessage replyMsg = poolIn.createReply();
+				replyMsg.setConversationId(consensusStateConvId);
+				replyMsg.setSender(new AID(selfId, AID.ISLOCALNAME));
+				replyMsg.addReceiver(new AID("env", AID.ISLOCALNAME));
+				String msgContent;
+
 				if (statePool <= 0.0f) {
+					replyMsg.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+					msgContent = String.valueOf(Math.max(newStatePool, 0)) + " " + poolIn.getSender().getLocalName();
+					replyMsg.setContent(msgContent);
 					selfState += Math.min(-statePool, inPool);
 					statePool = newStatePool;
 				} else {
-					statePool = newStatePool;
+					replyMsg.setPerformative(ACLMessage.REJECT_PROPOSAL);
+					msgContent = String.valueOf(inPool) + " " + poolIn.getSender().getLocalName();
+					replyMsg.setContent(msgContent);
 				}
+				myAgent.send(replyMsg);
+			}
+		}
+	}
+
+
+	private class StateRefiller extends CyclicBehaviour {
+
+		@Override
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+					MessageTemplate.MatchConversationId(consensusStateConvId));
+			ACLMessage stateReturnMsg = myAgent.receive(mt);
+			if (stateReturnMsg != null) {
+				Float inState = Float.parseFloat(stateReturnMsg.getContent());	
+				selfState += inState;
 			}
 		}
 	}
