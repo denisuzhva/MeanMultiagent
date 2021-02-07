@@ -1,27 +1,16 @@
-plugins {
-	id 'application'
-}
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'main.java.ru.denisuzhva.multiAgentAverage.App'
 
 sourceSets {
-   main {
-      java {
-         srcDir 'src'
-      }
-   }
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'main.java.ru.denisuzhva.multiAgentAverage.App'
+    main {
+        java {
+            srcDir 'src'
+        }
     }
 }
 
 dependencies {
 	compile files('./libs/jade.jar')
 }
-
-application {
-    mainClassName = 'main.java.ru.denisuzhva.multiAgentAverage.App'
-}
-
-
